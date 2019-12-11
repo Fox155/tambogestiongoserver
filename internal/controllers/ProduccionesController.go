@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"crypto/sha1"
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
 	"flag"
 	"fmt"
@@ -28,14 +29,14 @@ type ProduccionesController struct {
 
 // Alta Permite dar de alta una Produccion
 func (controlador *ProduccionesController) Alta(contexto *gin.Context) {
-	produccion := models.Producciones{}
-	if err := contexto.BindJSON(&produccion); err != nil {
+	mensaje := models.Mensaje{}
+	if err := contexto.BindJSON(&mensaje); err != nil {
 		contexto.JSON(http.StatusBadRequest, err)
 		contexto.Error(err)
 		return
 	}
-	fmt.Println("Produccion:\t", produccion)
-	if err := produccion.Validacion(); err != nil {
+	fmt.Println("Mensaje:\t", mensaje)
+	if err := mensaje.Validacion(); err != nil {
 		contexto.JSON(http.StatusBadRequest, err.Error())
 		contexto.Error(err)
 		return
@@ -47,20 +48,32 @@ func (controlador *ProduccionesController) Alta(contexto *gin.Context) {
 		contexto.Error(errP)
 		return
 	}
-	fmt.Println("Privada:\t", privada)
+	// fmt.Println("Privada:\t", privada)
 
-	bytes := produccion.Mensaje
-	fmt.Println("Bytes:\t", bytes)
+	bytesContenido := mensaje.Contenido
+	fmt.Println("Bytes:\t", bytesContenido)
 
-	desresultado, errD := decryptWithPrivateKey(bytes, privada)
+	desresultado, errD := decryptWithPrivateKey(bytesContenido, privada)
 	if errD != nil {
 		contexto.JSON(http.StatusBadRequest, errD.Error())
 		contexto.Error(errD)
 		return
 	}
+
 	fmt.Println("Desresultado:\t", desresultado)
 
-	fmt.Println("Desresultado Strin:\t", string(desresultado))
+	fmt.Println("Desresultado String:\t", string(desresultado))
+
+	produccion := models.Producciones{}
+	json.Unmarshal(desresultado, &produccion)
+
+	fmt.Println("Produccion:\t", produccion)
+
+	if err := controlador.Gestor.Alta(mensaje.Tambo, mensaje.Sucursal, &produccion); err != nil {
+		contexto.JSON(http.StatusBadRequest, err.Error())
+		contexto.Error(err)
+		return
+	}
 
 	contexto.JSON(http.StatusOK, produccion)
 	return
@@ -70,16 +83,6 @@ func (controlador *ProduccionesController) Alta(contexto *gin.Context) {
 func (controlador *ProduccionesController) EstoyVivo(contexto *gin.Context) {
 	contexto.JSON(http.StatusOK, "Estoy Vivo")
 	return
-}
-
-// encryptWithPublicKey encrypts data with public key
-func encryptWithPublicKey(msg []byte, pub *rsa.PublicKey) []byte {
-	hash := sha1.New()
-	ciphertext, err := rsa.EncryptOAEP(hash, rand.Reader, pub, msg, nil)
-	if err != nil {
-		log.Panicln(err)
-	}
-	return ciphertext
 }
 
 // fileToPrivateKey bytes to private key

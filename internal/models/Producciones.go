@@ -9,17 +9,16 @@ import (
 
 // Producciones estructura modelo de una produccion
 type Producciones struct {
-	Tambo          string `json:"Tambo" validate:"required|minLen:1"`
-	Mensaje        []byte `json:"Mensaje" validate:"required|minLen:1"`
-	IDProduccion   int64
-	IDSesionOrdeño int64
-	IDVaca         int
-	NroLactancia   int
-	Produccion     float32
-	FechaInicio    time.Time
-	FechaFin       time.Time
-	Medidor        map[string]string
-	MedidorDB      []byte
+	IDProduccion   int64             `gorm:"column:IdProduccion;primary_key"`
+	IDSesionOrdeño int64             `gorm:"column:IdSesionOrdeño"`
+	IDVaca         int               `gorm:"column:IdVaca"`
+	NroLactancia   int               `gorm:"column:NroLactancia"`
+	Produccion     float32           `gorm:"column:Produccion"`
+	FechaInicio    time.Time         `gorm:"column:FechaInicio"`
+	FechaFin       time.Time         `gorm:"column:FechaFin"`
+	Medidor        map[string]string `gorm:"-"`
+	MedidorDB      []byte            `gorm:"column:Medidor"`
+	IDRFID         int               `gorm:"-"`
 }
 
 // Validacion compruebe la validez de una produccion

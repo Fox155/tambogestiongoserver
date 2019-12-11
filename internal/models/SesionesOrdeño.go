@@ -11,3 +11,9 @@ type SesionesOrdeño struct {
 	Fecha          time.Time
 	Observaciones  string
 }
+
+// Sucursales estructura modelo de una sucursal
+type Sucursales struct {
+	IDSucursal int    `gorm:"column:IdSucursal;primary_key"`
+	Nombre     string `gorm:"column:Nombre"`
+}
