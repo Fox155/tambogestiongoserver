@@ -75,7 +75,9 @@ func (controlador *ProduccionesController) Alta(contexto *gin.Context) {
 		return
 	}
 
-	contexto.JSON(http.StatusOK, produccion)
+	contexto.JSON(http.StatusOK, map[string]string{
+		"Mensaje": "OK",
+	})
 	return
 }
 

@@ -14,10 +14,10 @@ type Producciones struct {
 	IDVaca         int               `gorm:"column:IdVaca"`
 	NroLactancia   int               `gorm:"column:NroLactancia"`
 	Produccion     float32           `gorm:"column:Produccion"`
-	FechaInicio    time.Time         `gorm:"column:FechaInicio"`
-	FechaFin       time.Time         `gorm:"column:FechaFin"`
+	FechaInicio    time.Time         `gorm:"column:FechaInicio;type:datetime"`
+	FechaFin       time.Time         `gorm:"column:FechaFin;type:datetime"`
 	Medidor        map[string]string `gorm:"-"`
-	MedidorDB      []byte            `gorm:"column:Medidor"`
+	MedidorDB      []byte            `gorm:"column:Medidor;type:JSON"`
 	IDRFID         int               `gorm:"-"`
 }
 

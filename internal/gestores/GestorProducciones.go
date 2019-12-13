@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"sync"
+	"time"
 
 	"tgs/internal/interfaces"
 	"tgs/internal/models"
@@ -72,11 +73,10 @@ func (gestor *GestorProducciones) Alta(tambo string, sucursalNombre string, prod
 		" AND " + tablaLactancias + ".FechaFin IS NULL" +
 		" AND " + tablaVacasLote + ".FechaEgreso IS NULL"
 	valores = append(valores, produccion.IDRFID)
-	valores = append(valores, sucursal.IDSucursal)
 	join := "INNER JOIN " + tablaEstadosVaca + " USING (IdVaca)" +
-		" INNER JOIN " + tablaLactancias + " ON " + tablaVacas + ".IdVaca = " + tablaLactancias + ".IdVaca " +
-		" INNER JOIN " + tablaVacasLote + " ON " + tablaVacas + ".IdVaca = " + tablaVacasLote + ".IdVaca " +
-		" INNER JOIN " + tablaLotes + " ON " + tablaLotes + ".IdLote = " + tablaVacasLote + ".IdLote "
+		" INNER JOIN " + tablaLactancias + " USING (IdVaca) " +
+		" INNER JOIN " + tablaVacasLote + " USING (IdVaca) " +
+		" INNER JOIN " + tablaLotes + " USING (IdLote) "
 	seleccion := tablaVacas + `.*, ` + tablaLactancias + ".NroLactancia, " + tablaLotes + ".IdSucursal"
 	if err := gestor.Db.DameConQuery(&vaca, tablaVacas, where, valores, join, seleccion, ""); err != nil {
 		if err.Error() == "record not found" {
@@ -88,9 +88,13 @@ func (gestor *GestorProducciones) Alta(tambo string, sucursalNombre string, prod
 	// Busco/doyAlta la sesion de ordeño
 	sesion := models.SesionesOrdeño{}
 	sesion.IDSucursal = sucursal.IDSucursal
+	// tiempito, errPT := time.Parse(time.RFC3339, produccion.FechaInicio.Format("2006-01-02T"))
+	// if errPT != nil {
+	// 	return errPT
+	// }
 	busquedaS := map[string]interface{}{
 		"IdSucursal": sucursal.IDSucursal,
-		"Fecha":      produccion.FechaInicio,
+		"Fecha":      time.Date(produccion.FechaInicio.Year(), produccion.FechaInicio.Month(), produccion.FechaInicio.Day(), 0, 0, 0, 0, produccion.FechaInicio.Location()), //produccion.FechaInicio,
 	}
 	if err := gestor.Db.DameAlta(&sesion, tablaSesiones, busquedaS); err != nil {
 		return err
@@ -110,14 +114,15 @@ func (gestor *GestorProducciones) Alta(tambo string, sucursalNombre string, prod
 		"IdSesionOrdeño": sesion.IDSesionOrdeño,
 		"IdVaca":         vaca.IDVaca,
 		"NroLactancia":   vaca.NroLactancia,
-		"Medidor":        produccion.MedidorDB,
-		"Produccion":     produccion.Produccion,
-		"FechaInicio":    produccion.FechaInicio,
-		"FechaFin":       produccion.FechaFin,
+		// "Medidor":        produccion.MedidorDB,
+		// "Produccion":  produccion.Produccion,
+		"FechaInicio": produccion.FechaInicio,
+		"FechaFin":    produccion.FechaFin,
 	}
 
 	if err := gestor.Db.DameAlta(&produccion, tablaProducciones, busqueda); err != nil {
 		return err
 	}
+
 	return nil
 }

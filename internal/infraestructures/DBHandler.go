@@ -22,7 +22,7 @@ func IniciarDB() (*DBHandler, error) {
 	options = options + ":root"
 	options = options + "@tcp(localhost)"
 	options = options + "/TamboGestion"
-	options = options + "?charset=utf8"
+	options = options + "?charset=utf8&parseTime=True"
 	db, err := gorm.Open("mysql", options)
 
 	if err != nil {
