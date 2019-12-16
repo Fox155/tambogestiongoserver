@@ -1,2 +1,5 @@
 [server]
 listen = ":5000"
+
+[file]
+name = "id_rsa"

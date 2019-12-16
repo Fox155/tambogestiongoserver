@@ -19,7 +19,7 @@ func IniciarDB() (*DBHandler, error) {
 	// root:kPCR5BL3LT@/TamboGestion?charset=utf8
 	options := ""
 	options = options + "root"
-	options = options + ":root"
+	options = options + ":kPCR5BL3LT"
 	options = options + "@tcp(localhost)"
 	options = options + "/TamboGestion"
 	options = options + "?charset=utf8&parseTime=True"

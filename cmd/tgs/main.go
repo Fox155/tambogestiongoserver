@@ -7,13 +7,6 @@ import (
 	"tgs/internal/routes"
 )
 
-// func main2() {
-// 	fmt.Println("Que parece")
-
-// 	r := routes.Rutas()
-// 	r.Run(":8080")
-// }
-
 func main() {
 	conf, err := initConfig()
 	if err != nil {
