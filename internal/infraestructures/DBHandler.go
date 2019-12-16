@@ -16,10 +16,9 @@ type DBHandler struct {
 
 // IniciarDB inicia la configuracion con las conexiones con la base de datos y devuelve su handler
 func IniciarDB() (*DBHandler, error) {
-	// root:kPCR5BL3LT@/TamboGestion?charset=utf8
 	options := ""
 	options = options + "root"
-	options = options + ":kPCR5BL3LT"
+	options = options + ":pass"
 	options = options + "@tcp(localhost)"
 	options = options + "/TamboGestion"
 	options = options + "?charset=utf8&parseTime=True"
